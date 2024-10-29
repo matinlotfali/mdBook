@@ -1,6 +1,6 @@
 # Theme
 
-The default renderer uses a [handlebars](http://handlebarsjs.com/) template to
+The default renderer uses a [handlebars](https://handlebarsjs.com) template to
 render your markdown files and comes with a default theme included in the mdBook
 binary.
 
@@ -26,6 +26,8 @@ Here are the files you can override:
 - **_highlight.css_** is the theme used for the code highlighting.
 - **_favicon.svg_** and **_favicon.png_** the favicon that will be used. The SVG
   version is used by [newer browsers].
+- **fonts/fonts.css** contains the definition of which fonts to load.
+  Custom fonts can be included in the `fonts` directory.
 
 Generally, when you want to tweak the theme, you don't need to override all the
 files. If you only need changes in the stylesheet, there is no point in
@@ -35,8 +37,12 @@ built-in ones, they will not get updated with new fixes / features.
 **Note:** When you override a file, it is possible that you break some
 functionality. Therefore I recommend to use the file from the default theme as
 template and only add / modify what you need. You can copy the default theme
-into your source directory automatically by using `mdbook init --theme` just
+into your source directory automatically by using `mdbook init --theme` and just
 remove the files you don't want to override.
+
+`mdbook init --theme` will not create every file listed above.
+Some files, such as `head.hbs`, do not have built-in equivalents.
+Just create the file if you need it.
 
 If you completely replace all built-in themes, be sure to also set
 [`output.html.preferred-dark-theme`] in the config, which defaults to the

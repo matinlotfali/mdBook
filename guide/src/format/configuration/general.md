@@ -7,7 +7,7 @@ Here is an example of what a ***book.toml*** file might look like:
 ```toml
 [book]
 title = "Example book"
-author = "John Doe"
+authors = ["John Doe"]
 description = "The example book covers examples."
 
 [rust]
@@ -66,9 +66,14 @@ logo = "static/logo.svg"
 Options for the Rust language, relevant to running tests and playground
 integration.
 
+```toml
+[rust]
+edition = "2015"   # the default edition for code blocks
+```
+
 - **edition**: Rust edition to use by default for the code snippets. Default
-  is "2015". Individual code blocks can be controlled with the `edition2015`
-  or `edition2018` annotations, such as:
+  is "2015". Individual code blocks can be controlled with the `edition2015`, 
+  `edition2018` or `edition2021` annotations, such as:
 
   ~~~text
   ```rust,edition2015
@@ -81,13 +86,22 @@ integration.
 
 This controls the build process of your book.
 
+```toml
+[build]
+build-dir = "book"                # the directory where the output is placed
+create-missing = true             # whether or not to create missing pages
+use-default-preprocessors = true  # use the default preprocessors
+extra-watch-dirs = []             # directories to watch for triggering builds
+```
+
 - **build-dir:** The directory to put the rendered book in. By default this is
   `book/` in the book's root directory.
+  This can overridden with the `--dest-dir` CLI option.
 - **create-missing:** By default, any missing files specified in `SUMMARY.md`
   will be created when the book is built (i.e. `create-missing = true`). If this
   is `false` then the build process will instead exit with an error if any files
   do not exist.
-- **use-default-preprocessors:** Disable the default preprocessors of (`links` &
+- **use-default-preprocessors:** Disable the default preprocessors (of `links` &
   `index`) by setting this option to `false`.
 
   If you have the same, and/or other preprocessors declared via their table
@@ -99,3 +113,6 @@ This controls the build process of your book.
     default preprocessors from running.
   - Adding `[preprocessor.links]`, for example, will ensure, regardless of
     `use-default-preprocessors` that `links` it will run.
+- **extra-watch-dirs**: A list of paths to directories that will be watched in
+  the `watch` and `serve` commands. Changes to files under these directories will
+  trigger rebuilds. Useful if your book depends on files outside its `src` directory.

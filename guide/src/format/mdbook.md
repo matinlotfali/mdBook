@@ -2,10 +2,11 @@
 
 ## Hiding code lines
 
-There is a feature in mdBook that lets you hide code lines by prepending them
-with a `#` [like you would with Rustdoc][rustdoc-hide].
+There is a feature in mdBook that lets you hide code lines by prepending them with a specific prefix.
 
-[rustdoc-hide]: https://doc.rust-lang.org/stable/rustdoc/documentation-tests.html#hiding-portions-of-the-example
+For the Rust language, you can use the `#` character as a prefix which will hide lines [like you would with Rustdoc][rustdoc-hide].
+
+[rustdoc-hide]: https://doc.rust-lang.org/stable/rustdoc/write-documentation/documentation-tests.html#hiding-portions-of-the-example
 
 ```bash
 # fn main() {
@@ -26,6 +27,107 @@ Will render as
     println!("{}", x + y);
 # }
 ```
+
+When you tap or hover the mouse over the code block, there will be an eyeball icon (<i class="fa fa-eye"></i>) which will toggle the visibility of the hidden lines.
+
+By default, this only works for code examples that are annotated with `rust`.
+However, you can define custom prefixes for other languages by adding a new line-hiding prefix in your `book.toml` with the language name and prefix character(s):
+
+```toml
+[output.html.code.hidelines]
+python = "~"
+```
+
+The prefix will hide any lines that begin with the given prefix. With the python prefix shown above, this:
+
+```bash
+~hidden()
+nothidden():
+~    hidden()
+    ~hidden()
+    nothidden()
+```
+
+will render as
+
+```python
+~hidden()
+nothidden():
+~    hidden()
+    ~hidden()
+    nothidden()
+```
+
+This behavior can be overridden locally with a different prefix. This has the same effect as above:
+
+~~~markdown
+```python,hidelines=!!!
+!!!hidden()
+nothidden():
+!!!    hidden()
+    !!!hidden()
+    nothidden()
+```
+~~~
+
+## Rust Playground
+
+Rust language code blocks will automatically get a play button (<i class="fa fa-play"></i>) which will execute the code and display the output just below the code block.
+This works by sending the code to the [Rust Playground].
+
+```rust
+println!("Hello, World!");
+```
+
+If there is no `main` function, then the code is automatically wrapped inside one.
+
+If you wish to disable the play button for a code block, you can include the `noplayground` option on the code block like this:
+
+~~~markdown
+```rust,noplayground
+let mut name = String::new();
+std::io::stdin().read_line(&mut name).expect("failed to read line");
+println!("Hello {}!", name);
+```
+~~~
+
+Or, if you wish to disable the play button for all code blocks in your book, you can write the config to the `book.toml` like this.
+
+```toml
+[output.html.playground]
+runnable = false
+```
+
+## Rust code block attributes
+
+Additional attributes can be included in Rust code blocks with comma, space, or tab-separated terms just after the language term. For example:
+
+~~~markdown
+```rust,ignore
+# This example won't be tested.
+panic!("oops!");
+```
+~~~
+
+These are particularly important when using [`mdbook test`] to test Rust examples.
+These use the same attributes as [rustdoc attributes], with a few additions:
+
+* `editable` — Enables the [editor].
+* `noplayground` — Removes the play button, but will still be tested.
+* `mdbook-runnable` — Forces the play button to be displayed.
+  This is intended to be combined with the `ignore` attribute for examples that should not be tested, but you want to allow the reader to run.
+* `ignore` — Will not be tested and no play button is shown, but it is still highlighted as Rust syntax.
+* `should_panic` — When executed, it should produce a panic.
+* `no_run` — The code is compiled when tested, but it is not run.
+  The play button is also not shown.
+* `compile_fail` — The code should fail to compile.
+* `edition2015`, `edition2018`, `edition2021` — Forces the use of a specific Rust edition.
+  See [`rust.edition`] to set this globally.
+
+[`mdbook test`]: ../cli/test.md
+[rustdoc attributes]: https://doc.rust-lang.org/rustdoc/documentation-tests.html#attributes
+[editor]: theme/editor.md
+[`rust.edition`]: configuration/general.md#rust-options
 
 ## Including files
 
@@ -190,6 +292,17 @@ code.
 Here is what a rendered code snippet looks like:
 
 {{#playground example.rs}}
+
+Any additional values passed after the filename will be included as attributes of the code block.
+For example `\{{#playground example.rs editable}}` will create the code block like the following:
+
+~~~markdown
+```rust,editable
+# Contents of example.rs here.
+```
+~~~
+
+And the `editable` attribute will enable the [editor] as described at [Rust code block attributes](#rust-code-block-attributes).
 
 [Rust Playground]: https://play.rust-lang.org/
 
